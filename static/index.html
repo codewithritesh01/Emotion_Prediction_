@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AuraEmotion | AI-Powered Emotional Intelligence</title>
+  <meta name="description" content="State-of-the-art neural emotion analysis powered by a Bidirectional GRU deep learning model. Detect Joy, Sadness, Anger, Fear, Love, and Surprise in real-time." />
+  
+  <!-- Modern Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>" />
+</head>
+<body data-theme="dark">
+  <!-- Dynamic Ambient Emotion Aura (shifts color based on predicted emotion) -->
+  <div class="ambient-glow" id="ambientGlow" aria-hidden="true"></div>
+  <div class="grid-overlay" aria-hidden="true"></div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-orb" aria-hidden="true">
+          <span class="orb-core"></span>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">AuraEmotion</span>
+          <span class="brand-badge">BiGRU Neural v1.0</span>
+        </div>
+      </div>
+
+      <div class="nav-controls">
+        <!-- API Health Status Indicator -->
+        <div class="status-pill" id="healthStatus" title="Checking API status...">
+          <span class="status-dot"></span>
+          <span class="status-label" id="healthLabel">Checking API</span>
+        </div>
+
+        <!-- Audio Sound Effects Toggle -->
+        <button class="icon-btn" id="sfxToggle" title="Toggle audio feedback" aria-label="Toggle audio feedback">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+        </button>
+
+        <!-- History Drawer Trigger -->
+        <button class="icon-btn" id="historyToggle" title="View analysis history" aria-label="View history">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 14 14"></polyline>
+          </svg>
+          <span class="history-count-badge" id="historyBadge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-wrapper">
+    <!-- Hero Header -->
+    <section class="hero-section">
+      <div class="hero-pill">
+        <span class="hero-pill-sparkle">✦</span>
+        <span>Deep Learning Sentiment & Tone Intelligence</span>
+      </div>
+      <h1 class="hero-title">Decode Human Emotion with <span class="gradient-text">Neural Precision</span></h1>
+      <p class="hero-subtitle">
+        Enter any thought, journal entry, or message. Our Bidirectional GRU model analyzes sequence context to classify complex human emotional states in milliseconds.
+      </p>
+    </section>
+
+    <!-- Workspace Layout: Input Card & Results Card -->
+    <div class="workspace-grid">
+      <!-- Input Panel -->
+      <section class="card input-card" aria-label="Text Input Panel">
+        <div class="card-header">
+          <div class="card-header-left">
+            <span class="section-badge">01</span>
+            <h2 class="card-title">Express Your Text</h2>
+          </div>
+          <button class="text-action-btn" id="clearBtn" title="Clear text input" aria-label="Clear input">
+            <svg class="mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            <span>Clear</span>
+          </button>
+        </div>
+
+        <div class="textarea-wrapper">
+          <textarea
+            id="textInput"
+            class="styled-textarea"
+            placeholder="How are you feeling today? Type or paste your sentence here..."
+            maxlength="2000"
+            rows="6"
+            aria-label="Input sentence to analyze"
+          ></textarea>
+
+          <div class="textarea-footer">
+            <div class="counter-group">
+              <span class="count-item" id="charCounter">0 / 2000 chars</span>
+              <span class="count-divider">•</span>
+              <span class="count-item" id="wordCounter">0 words</span>
+            </div>
+            <div class="keyboard-hint" title="Press Ctrl + Enter to analyze">
+              <kbd class="kbd-key">Ctrl</kbd> + <kbd class="kbd-key">Enter</kbd>
+            </div>
+          </div>
+        </div>
+
+        <!-- Emotion Quick Inspiration Presets -->
+        <div class="presets-container">
+          <span class="presets-label">Try instant presets:</span>
+          <div class="presets-chips" id="presetChips">
+            <button class="preset-chip" data-emotion="joy" data-text="I just received the acceptance letter for my dream program, my heart is dancing!">
+              <span class="preset-dot dot-joy"></span>
+              <span>Joy</span>
+            </button>
+            <button class="preset-chip" data-emotion="love" data-text="I am deeply grateful for you being by my side through everything.">
+              <span class="preset-dot dot-love"></span>
+              <span>Love</span>
+            </button>
+            <button class="preset-chip" data-emotion="surprise" data-text="I opened the mystery box and had no clue they arranged this whole surprise party!">
+              <span class="preset-dot dot-surprise"></span>
+              <span>Surprise</span>
+            </button>
+            <button class="preset-chip" data-emotion="sadness" data-text="Rain keeps pouring outside and the house feels so painfully empty and quiet.">
+              <span class="preset-dot dot-sadness"></span>
+              <span>Sadness</span>
+            </button>
+            <button class="preset-chip" data-emotion="fear" data-text="The power went out abruptly and I can hear strange creaking floorboards downstairs.">
+              <span class="preset-dot dot-fear"></span>
+              <span>Fear</span>
+            </button>
+            <button class="preset-chip" data-emotion="anger" data-text="It is infuriating how they stole credit for months of our tireless teamwork!">
+              <span class="preset-dot dot-anger"></span>
+              <span>Anger</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button class="primary-btn" id="analyzeBtn" aria-label="Analyze emotion in text">
+          <span class="btn-shimmer" aria-hidden="true"></span>
+          <span class="btn-content" id="btnContent">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+            </svg>
+            <span>Analyze Emotion</span>
+          </span>
+          <span class="spinner" id="btnSpinner" style="display: none;" aria-hidden="true"></span>
+        </button>
+      </section>
+
+      <!-- Results Panel -->
+      <section class="card results-card" id="resultsCard" aria-label="Analysis Results Panel">
+        <div class="card-header">
+          <div class="card-header-left">
+            <span class="section-badge">02</span>
+            <h2 class="card-title">Neural Classification</h2>
+          </div>
+          <div class="result-actions" id="resultActions" style="display: none;">
+            <button class="icon-btn-small" id="copyResultBtn" title="Copy result summary" aria-label="Copy result">
+              <svg class="mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+            <button class="icon-btn-small" id="copyJsonBtn" title="Copy JSON payload" aria-label="Copy JSON">
+              <svg class="mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Initial Placeholder State -->
+        <div class="empty-state" id="emptyState">
+          <div class="empty-graphic">
+            <div class="graphic-ring"></div>
+            <div class="graphic-icon">✨</div>
+          </div>
+          <h3 class="empty-title">Awaiting Input</h3>
+          <p class="empty-desc">
+            Enter a phrase above or pick one of the sample presets to observe real-time emotional probability distributions.
+          </p>
+          <div class="feature-badges">
+            <span class="feature-badge">⚡ 6 Emotion Spectrum</span>
+            <span class="feature-badge">🧠 BiGRU Recurrent Architecture</span>
+            <span class="feature-badge">🎯 Confidence Calibration</span>
+          </div>
+        </div>
+
+        <!-- Active Result Content (Hidden by default) -->
+        <div class="result-content" id="resultContent" style="display: none;">
+          <!-- Primary Hero Result -->
+          <div class="hero-result" id="heroResult">
+            <div class="hero-result-left">
+              <div class="emotion-avatar-wrap">
+                <div class="emotion-avatar" id="heroEmoji">😄</div>
+                <div class="avatar-halo" id="avatarHalo"></div>
+              </div>
+              <div class="hero-meta">
+                <span class="hero-label">Dominant Emotion</span>
+                <h3 class="hero-emotion-name" id="heroEmotionName">Joy</h3>
+                <p class="hero-description" id="heroDescription">
+                  Expressing optimism, delight, and positive mental resonance.
+                </p>
+              </div>
+            </div>
+
+            <!-- Confidence Circular Dial -->
+            <div class="confidence-dial-wrap">
+              <svg class="circular-dial" viewBox="0 0 100 100">
+                <circle class="dial-track" cx="50" cy="50" r="40"></circle>
+                <circle class="dial-fill" id="dialFill" cx="50" cy="50" r="40"></circle>
+              </svg>
+              <div class="dial-text">
+                <span class="dial-percent" id="dialPercent">0%</span>
+                <span class="dial-sub">Confidence</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- All Probabilities Breakdown Bars -->
+          <div class="breakdown-section">
+            <div class="breakdown-header">
+              <h4 class="breakdown-title">Probability Spectrum</h4>
+              <span class="breakdown-subtitle">Normalized Softmax Scores</span>
+            </div>
+
+            <div class="bars-container" id="barsContainer">
+              <!-- Emotion bar templates will be injected/updated here -->
+            </div>
+          </div>
+
+          <!-- Analyzed Sentence Preview Quote -->
+          <div class="quote-preview">
+            <span class="quote-icon">“</span>
+            <p class="quote-text" id="quoteText"></p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- History Drawer -->
+  <aside class="history-drawer" id="historyDrawer" aria-label="Analysis History Panel">
+    <div class="drawer-header">
+      <div class="drawer-title-group">
+        <h3 class="drawer-title">Session History</h3>
+        <span class="drawer-subtitle">Saved locally in browser</span>
+      </div>
+      <div class="drawer-actions">
+        <button class="drawer-clear-btn" id="clearHistoryBtn" title="Clear all history">Clear</button>
+        <button class="icon-btn-small" id="closeDrawerBtn" title="Close history" aria-label="Close drawer">
+          <svg class="mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="drawer-body" id="historyList">
+      <!-- Injected history items -->
+      <div class="history-empty" id="historyEmpty">
+        <p>No recent predictions recorded yet.</p>
+      </div>
+    </div>
+  </aside>
+  <div class="drawer-backdrop" id="drawerBackdrop" aria-hidden="true"></div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- External Script -->
+  <script src="/static/app.js"></script>
+</body>
+</html>
