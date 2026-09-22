@@ -3,7 +3,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111+-009688.svg?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15+-FF6F00.svg?style=flat-square&logo=tensorflow&logoColor=white)](https://tensorflow.org)
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
-[![Vercel](https://img.shields.io/badge/Deploy-Vercel-black.svg?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com/)
+[![Render](https://img.shields.io/badge/Deploy-Render-46E3B7.svg?style=flat-square&logo=render&logoColor=white)](https://render.com/)
 
 An end-to-end Natural Language Processing (NLP) deep learning application that analyzes sentences and predicts human emotions in real time. Powered by a **Bidirectional Gated Recurrent Unit (BiGRU)** neural network, an asynchronous **FastAPI** backend, and an interactive glassmorphic web interface.
 
@@ -47,7 +47,7 @@ The neural network classifies input sentences into six core emotional categories
 - **Deep Learning BiGRU Model**: Sequence classification neural network with custom word embedding and post-padded sequences.
 - **FastAPI Backend**: Fast, asynchronous REST API with Pydantic v2 schemas and validation.
 - **Modern Interactive UI**: Responsive glassmorphism interface featuring dynamic mood ambient glows, real-time confidence gauges, audio feedback, preset prompt chips, and history storage.
-- **Vercel Deploy Ready**: Configured with `vercel.json` for serverless deployment on Vercel.
+- **Render Cloud Ready**: Pre-configured with `render.yaml` and `.python-version` (Python 3.11) for seamless 1-click cloud deployment on Render.
 - **Interactive Documentation**: Auto-generated interactive Swagger UI (`/docs`) and ReDoc (`/redoc`).
 
 ---
@@ -67,9 +67,10 @@ Emotion-Prediction-Project/
 │   ├── index.html              # Web interface
 │   └── style.css               # Glassmorphism design system & styles
 ├── .gitignore                  # Git exclusions (caches, virtualenvs, Project_activ.txt)
+├── .python-version             # Python 3.11.8 pin for cloud deployment
 ├── main.py                     # FastAPI server & inference endpoints
+├── render.yaml                 # Render Blueprint deployment configuration
 ├── requirements.txt            # Python dependencies
-├── vercel.json                 # Vercel deployment configuration
 └── README.md                   # Project documentation
 ```
 
@@ -169,38 +170,28 @@ GET /health
 
 ---
 
-## ☁️ Deploying to Vercel
+## ☁️ Deploying to Render
 
-The project includes `vercel.json` configured for Python serverless deployment on Vercel.
+The project includes `render.yaml` and `.python-version` configured for direct deployment as a Python Web Service on Render.
 
-### Method : Deploy via Vercel Dashboard (Git Integration)
+### Quick Deployment Steps:
 
-1. Push your project to **GitHub** or **GitLab**.
-2. Go to [Vercel Dashboard](https://vercel.com/dashboard) and click **"Add New... > Project"**.
-3. Import your repository.
-4. Vercel automatically detects `vercel.json` and Python configuration.
-5. Click **"Deploy"**.
+1. Log in to [Render Dashboard](https://dashboard.render.com/) with your GitHub account.
+2. Click **"New +"** and select **"Web Service"**.
+3. Choose **"Build and deploy from a Git repository"** and select **`Emotion_Prediction_`**.
+4. Configure the service settings (if not automatically populated by `render.yaml`):
+   - **Name**: `emotion-prediction-app` (or your preferred name)
+   - **Language**: `Python 3`
+   - **Branch**: `main`
+   - **Region**: Nearest to you (e.g. `Oregon (US West)` or `Singapore`)
+   - **Build Command**: `pip install --upgrade pip && pip install -r requirements.txt`
+   - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+   - **Instance Type**: `Free`
+5. Under **Advanced** &rarr; **Environment Variables**, add:
+   - `PYTHON_VERSION` = `3.11.8`
+6. Click **"Create Web Service"**.
 
-### Configuration (`vercel.json`)
-```json
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "main.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "main.py"
-    }
-  ]
-}
-```
-
-> **Note on Serverless Functions**: Vercel serverless has a function bundle limit of 250 MB uncompressed. Standard TensorFlow CPU builds are large; if Vercel warns about serverless function package size during build, ensure `requirements.txt` only includes necessary lightweight packages (`tensorflow-cpu`, `fastapi`, `uvicorn`, `pydantic`).
+> **💡 Render Tip**: Render automatically handles the `$PORT` environment variable and supports long-running FastAPI instances with memory allocations suited for TensorFlow models. When using the Free tier, services spin down after 15 minutes of inactivity and wake up automatically on the next request.
 
 ---
 
