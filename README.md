@@ -5,6 +5,10 @@
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![Render](https://img.shields.io/badge/Deploy-Render-46E3B7.svg?style=flat-square&logo=render&logoColor=white)](https://render.com/)
 
+### 🌐 Live Demo & API Docs
+- 🚀 **Web Application:** [https://emotion-prediction-app.onrender.com](https://emotion-prediction-app.onrender.com)
+- 📖 **Interactive Swagger API Docs:** [https://emotion-prediction-app.onrender.com/docs](https://emotion-prediction-app.onrender.com/docs)
+
 An end-to-end Natural Language Processing (NLP) deep learning application that analyzes sentences and predicts human emotions in real time. Powered by a **Bidirectional Gated Recurrent Unit (BiGRU)** neural network, an asynchronous **FastAPI** backend, and an interactive glassmorphic web interface.
 
 ---
